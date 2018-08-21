@@ -61,10 +61,9 @@ public final class SequenceGenerator {
 
         lastTimestamp = timestamp;
 
-        long id = (timestamp - TA_EPOCH) << TIMESTAMP_LEFT;
-        id |= (MACHINE_ID << MACHINE_LEFT);
-        id |= sequence;
-        return id;
+        return (timestamp - TA_EPOCH) << TIMESTAMP_LEFT
+                | (MACHINE_ID << MACHINE_LEFT)
+                | sequence;
     }
 
     static {
