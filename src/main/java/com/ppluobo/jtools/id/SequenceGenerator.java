@@ -3,22 +3,13 @@ package com.ppluobo.jtools.id;
 import java.net.NetworkInterface;
 import java.security.SecureRandom;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
  * 基于snowFlake，machineId自动生成
  */
 public final class SequenceGenerator {
-
-    /**
-     * start at random
-     */
-    private static final AtomicInteger counter = new AtomicInteger(new SecureRandom().nextInt());
 
     /**
      * 起始的时间戳, 2018-01-01T00:00:00.000Z
@@ -46,8 +37,10 @@ public final class SequenceGenerator {
     private final static long MACHINE_ID;     //机器标识
     private static long lastTimestamp = -1L;//上一次时间戳
 
+    private static long sequence = 0L;
 
-    public static long nextId() {
+
+    public static synchronized long nextId() {
 
         long timestamp = timeGen();
 
@@ -55,17 +48,15 @@ public final class SequenceGenerator {
             throw new RuntimeException("Clock moved backwards.  Refusing to generate id");
         }
 
-        long sequence; //序列号
-
         if (timestamp == lastTimestamp) {
             //相同毫秒内，序列号自增
-            sequence = counter.getAndIncrement() & MAX_SEQUENCE;
+            sequence = (sequence + 1) & MAX_SEQUENCE;
             //同一毫秒的序列数已经达到最大
             if (sequence == 0L) {
                 timestamp = tilNextMillis();
             }
         } else {
-            sequence = counter.getAndIncrement() & MAX_SEQUENCE;
+            sequence = 0;
         }
 
         lastTimestamp = timestamp;

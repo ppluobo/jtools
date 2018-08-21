@@ -34,6 +34,7 @@ public class SequenceGeneratorTest {
 
     }
 
+
     public static class ThreadRun implements Runnable {
         private String name;
         private Set<Long> sets;
