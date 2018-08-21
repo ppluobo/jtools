@@ -43,20 +43,17 @@ public final class SequenceGenerator {
     public static synchronized long nextId() {
 
         long timestamp = timeGen();
-
         if (timestamp < lastTimestamp) {
             throw new RuntimeException("Clock moved backwards.  Refusing to generate id");
         }
 
         if (timestamp == lastTimestamp) {
-            //相同毫秒内，序列号自增
             sequence = (sequence + 1) & MAX_SEQUENCE;
-            //同一毫秒的序列数已经达到最大
             if (sequence == 0L) {
                 timestamp = tilNextMillis();
             }
         } else {
-            sequence = 0;
+            sequence = 0L;
         }
 
         lastTimestamp = timestamp;
